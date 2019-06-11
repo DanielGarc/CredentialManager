@@ -1,5 +1,4 @@
 #include "CredentialManager.h"
-#include "ESP8266WiFiMulti.h"
 
 #include "FS.h"
 #include "string.h"
@@ -34,9 +33,9 @@ bool CredentialManager::ClearCredentialMemory()
 bool CredentialManager::AddCredential(const char *ssid, const char *passphrase)
 {
 
-    Serial.print("[AddCredential] SSID: ");
+    Serial.print("[AddCredential]: @ssid: ");
     Serial.print(ssid);
-    Serial.print(",Passphrase: ");
+    Serial.print(",@passphrase: ");
     Serial.println(passphrase);
 
     if (!FileRead)
@@ -58,9 +57,17 @@ bool CredentialManager::AddCredential(const char *ssid, const char *passphrase)
     }
 }
 
-///Reads Credentials from memory, adds them to the wifiMulti object
-void CredentialManager::ReadCredentialsFromMemory(void)
+bool CredentialManager::AddCredential()
 {
+    Serial.print("[AddCredential]");
+    return ReadCredentialsFromMemory();
+}
+
+//Reads Credentials from memory, adds them to the wifiMulti object
+//returns true if at least one credential was added from memory
+bool CredentialManager::ReadCredentialsFromMemory(void)
+{
+    bool credentialAdded = false;
     Serial.print("[ReadCredentialsFromMemory]\n");
 
     SPIFFS.begin();
@@ -96,6 +103,7 @@ void CredentialManager::ReadCredentialsFromMemory(void)
 
                 if (!wifiMulti.existsAP(_ssid, _passphrase) && wifiMulti.addAP(_ssid, _passphrase))
                 {
+                    credentialAdded = true;
                     Serial.print("[Success]: Credential SSID: ");
                     Serial.print(_ssid);
                     Serial.print(", Password: ");
@@ -115,8 +123,9 @@ void CredentialManager::ReadCredentialsFromMemory(void)
             index++;
         }
     }
-
     SPIFFS.end();
+
+    return credentialAdded;
 }
 
 bool CredentialManager::WriteCredentialToMemory(const char *ssid, const char *passphrase)
@@ -136,4 +145,9 @@ bool CredentialManager::WriteCredentialToMemory(const char *ssid, const char *pa
     SPIFFS.end();
 
     return true;
+}
+
+wl_status_t CredentialManager::run(void)
+{
+    return wifiMulti.run();
 }
