@@ -1,4 +1,12 @@
-#CredentialManager for ESP8266
+# CredentialManager for ESP8266
+
+Stores **ssid,password** value pairs in flash memory.
+Automatically connects to a network if credentials were previously stored.
 
 # TODO
-- [ ] Update this readme.
+
+- Remove ESP8266WifiMulti dependecy.
+- When booting up:
+  - Read networks from FLASH and store them in RAM.
+  - Scan networks, try to connect to available networks, priority to > signal.
+  - Store previously used networks, and try to match existing networks to that.
