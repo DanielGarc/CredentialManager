@@ -12,7 +12,7 @@
 #ifndef CredentialManager_H
 #define CredentialManager_H
 
-#include "ESP8266WiFiMulti.h"
+#include "ESP8266WiFi.h"
 
 #include <vector>
 
@@ -49,13 +49,13 @@ public:
      * @return bool True if credential added
      *
      */
-    bool AddCredential(const char *ssid, const char *passphrase);
+    bool AddCredential(const char *ssid, const char *password);
 
-    bool ExistWifiCredential(const char *ssid, const char *passphrase);
+    bool ExistWifiCredential(const char *ssid, const char *password);
 
     bool ClearCredentialMemory(void);
 
-    wl_status_t run(void);
+    wl_status_t Connect(void);
 
 private:
     bool fileRead = false;
@@ -64,11 +64,33 @@ private:
 
     Networks prevUsedNetworks;
 
+    bool _ExistWifiCredential(const char *ssid, const char *password);
+
+    bool _AddCredential(const char *ssid, const char *password);
+
     bool ReadCredentialsFromMemory(void);
 
-    int AddCredentialToList(const char *ssid, const char *passphrase);
+    bool _ReadCredentialsFromMemory(void);
 
-    bool WriteCredentialToMemory(const char *ssid, const char *passphrase);
+    int AddCredentialToList(const char *ssid, const char *password);
+
+    int _AddCredentialToList(const char *ssid, const char *password);
+
+    bool WriteCredentialToMemory(const char *ssid, const char *password);
+
+    bool AddNetworkToList(const char *ssid);
+
+    bool _AddNetworToList(const char *ssid);
+
+    bool ReadNetworksFromMemory(const char *ssid);
+
+    bool _ReadNetworksFromMemory(const char *ssid);
+
+    bool WriteNetworkToMemory(const char *ssid);
+
+    bool _WriteNetworkToMemory(const char *ssid);
+
+    wl_status_t _Connect(void);
 };
 
 #endif

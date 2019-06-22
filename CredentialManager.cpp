@@ -25,8 +25,6 @@
 #define CREDENTIAL_PATH "/credentials"
 #define USED_NETWORKS "/usednetworks"
 
-ESP8266WiFiMulti wifiMulti;
-
 CredentialManager::CredentialManager()
 {
 }
@@ -47,25 +45,7 @@ bool CredentialManager::ClearCredentialMemory()
 
 bool CredentialManager::AddCredential(const char *ssid, const char *password)
 {
-    Serial.print("[AddCredential]: @ssid: ");
-    Serial.print(ssid);
-    Serial.print(",@password: ");
-    Serial.println(password);
-
-    if (!fileRead)
-    {
-        ReadCredentialsFromMemory();
-    }
-
-    if (AddCredentialToList(ssid, password) == 0)
-    {
-        WriteCredentialToMemory(ssid, password);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return _AddCredential(ssid, password);
 }
 
 //Reads Credentials from memory, adds them to the wifiMulti object
@@ -75,13 +55,45 @@ bool CredentialManager::AddCredential(const char *ssid, const char *password)
     SSID is saved first then the password, each in a different line \n
 
  */
-
-/**
- * @brief
- *
- * @return bool
- */
 bool CredentialManager::ReadCredentialsFromMemory(void)
+{
+    return _ReadCredentialsFromMemory();
+}
+
+bool CredentialManager::WriteCredentialToMemory(const char *ssid, const char *password)
+{
+    Serial.print("[WriteCredentialToMemory] @ssid: ");
+    Serial.print(ssid);
+    Serial.print(",@password: ");
+    Serial.println(password);
+
+    SPIFFS.begin();
+    File f = SPIFFS.open(CREDENTIAL_PATH, FILE_APPEND);
+    Serial.println(ssid);
+    f.println(ssid);
+    Serial.println(password);
+    f.println(password);
+    SPIFFS.end();
+
+    return true;
+}
+
+wl_status_t CredentialManager::Connect(void)
+{
+    return _Connect();
+}
+
+bool CredentialManager::ExistWifiCredential(const char *ssid, const char *password)
+{
+    return _ExistWifiCredential(ssid, password);
+}
+
+int CredentialManager::AddCredentialToList(const char *ssid, const char *password)
+{
+    return _AddCredentialToList(ssid, password);
+}
+
+bool CredentialManager::_ReadCredentialsFromMemory(void)
 {
     bool credentialAdded = false;
     fileRead = true;
@@ -121,14 +133,15 @@ bool CredentialManager::ReadCredentialsFromMemory(void)
                 _password = s.c_str();
                 Serial.println(s);
 
-                if (!wifiMulti.existsAP(_ssid, _password) && wifiMulti.addAP(_ssid, _password))
+                int rslt = AddCredentialToList(_ssid, _password);
+
+                if (rslt == 0 || rslt == 1)
                 {
                     credentialAdded = true;
                     Serial.print("[Success]: Credential SSID: ");
                     Serial.print(_ssid);
                     Serial.print(", Password: ");
                     Serial.print(_password);
-                    Serial.print(", Added to WifiMulti\n");
                 }
                 else
                 {
@@ -136,7 +149,6 @@ bool CredentialManager::ReadCredentialsFromMemory(void)
                     Serial.print(_ssid);
                     Serial.print(", Password: ");
                     Serial.print(_password);
-                    Serial.print(", NOT Added to WifiMulti\n");
                 }
             }
 
@@ -148,7 +160,7 @@ bool CredentialManager::ReadCredentialsFromMemory(void)
     return credentialAdded;
 }
 
-bool CredentialManager::ExistWifiCredential(const char *ssid, const char *password)
+bool CredentialManager::_ExistWifiCredential(const char *ssid, const char *password)
 {
     for (auto entry : wifiCredentials)
     {
@@ -174,30 +186,36 @@ bool CredentialManager::ExistWifiCredential(const char *ssid, const char *passwo
     return false;
 }
 
-bool CredentialManager::WriteCredentialToMemory(const char *ssid, const char *password)
-{
-    Serial.print("[WriteCredentialToMemory] @ssid: ");
-    Serial.print(ssid);
-    Serial.print(",@password: ");
-    Serial.println(password);
-
-    SPIFFS.begin();
-    File f = SPIFFS.open(CREDENTIAL_PATH, FILE_APPEND);
-    Serial.println(ssid);
-    f.println(ssid);
-    Serial.println(password);
-    f.println(password);
-    SPIFFS.end();
-
-    return true;
-}
-
 /**
  * @brief Tries to add a new credential to the credential list
  *
  * @return int 0 = credential added, 1 = already exists, 2 = ssid too long or empty, 3 = password too long
  */
-int CredentialManager::AddCredentialToList(const char *ssid, const char *password)
+
+bool CredentialManager::_AddCredential(const char *ssid, const char *password)
+{
+    Serial.print("[AddCredential]: @ssid: ");
+    Serial.print(ssid);
+    Serial.print(",@password: ");
+    Serial.println(password);
+
+    if (!fileRead)
+    {
+        ReadCredentialsFromMemory();
+    }
+
+    if (AddCredentialToList(ssid, password) == 0)
+    {
+        WriteCredentialToMemory(ssid, password);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+int CredentialManager::_AddCredentialToList(const char *ssid, const char *password)
 {
     WifiCredential newCredential;
 
@@ -233,8 +251,27 @@ int CredentialManager::AddCredentialToList(const char *ssid, const char *passwor
     return 0;
 }
 
-wl_status_t CredentialManager::run(void)
+wl_status_t CredentialManager::_Connect(void)
 {
+    return WL_CONNECTED;
+}
 
-    return wifiMulti.run();
+bool CredentialManager::AddNetworkToList(const char *ssid)
+{
+    return _AddNetworToList(ssid);
+}
+
+bool CredentialManager::_AddNetworToList(const char *ssid)
+{
+    return false;
+}
+
+bool CredentialManager::ReadNetworksFromMemory(const char *ssid)
+{
+    return _ReadNetworksFromMemory(ssid);
+}
+
+bool CredentialManager::_ReadNetworksFromMemory(const char *ssid)
+{
+    return false;
 }
