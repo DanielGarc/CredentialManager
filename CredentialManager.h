@@ -12,8 +12,6 @@
 #ifndef CredentialManager_H
 #define CredentialManager_H
 
-#include "ESP8266WiFi.h"
-
 #include <vector>
 
 struct WifiCredential
@@ -28,8 +26,6 @@ struct NetworkSSID
 };
 
 typedef std::vector<WifiCredential> WifiCredentials;
-
-typedef std::vector<NetworkSSID> Networks;
 
 class CredentialManager
 {
@@ -53,16 +49,14 @@ public:
 
     bool ExistWifiCredential(const char *ssid, const char *password);
 
-    bool ClearCredentialMemory(void);
+    const char *GetPassword(const char *ssid);
 
-    wl_status_t Connect(void);
+    bool ClearCredentialMemory(void);
 
 private:
     bool fileRead = false;
 
     WifiCredentials wifiCredentials;
-
-    Networks prevUsedNetworks;
 
     bool _ExistWifiCredential(const char *ssid, const char *password);
 
@@ -78,19 +72,7 @@ private:
 
     bool WriteCredentialToMemory(const char *ssid, const char *password);
 
-    bool AddNetworkToList(const char *ssid);
-
-    bool _AddNetworToList(const char *ssid);
-
-    bool ReadNetworksFromMemory(const char *ssid);
-
-    bool _ReadNetworksFromMemory(const char *ssid);
-
-    bool WriteNetworkToMemory(const char *ssid);
-
-    bool _WriteNetworkToMemory(const char *ssid);
-
-    wl_status_t _Connect(void);
+    const char *_GetPassword(const char *ssid);
 };
 
 #endif

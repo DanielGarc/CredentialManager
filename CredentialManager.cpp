@@ -23,7 +23,6 @@
 #endif
 
 #define CREDENTIAL_PATH "/credentials"
-#define USED_NETWORKS "/usednetworks"
 
 CredentialManager::CredentialManager()
 {
@@ -78,11 +77,6 @@ bool CredentialManager::WriteCredentialToMemory(const char *ssid, const char *pa
     return true;
 }
 
-wl_status_t CredentialManager::Connect(void)
-{
-    return _Connect();
-}
-
 bool CredentialManager::ExistWifiCredential(const char *ssid, const char *password)
 {
     return _ExistWifiCredential(ssid, password);
@@ -91,6 +85,11 @@ bool CredentialManager::ExistWifiCredential(const char *ssid, const char *passwo
 int CredentialManager::AddCredentialToList(const char *ssid, const char *password)
 {
     return _AddCredentialToList(ssid, password);
+}
+
+const char *CredentialManager::GetPassword(const char *ssid)
+{
+    return _GetPassword(ssid);
 }
 
 bool CredentialManager::_ReadCredentialsFromMemory(void)
@@ -251,27 +250,15 @@ int CredentialManager::_AddCredentialToList(const char *ssid, const char *passwo
     return 0;
 }
 
-wl_status_t CredentialManager::_Connect(void)
+const char *CredentialManager::_GetPassword(const char *ssid)
 {
-    return WL_CONNECTED;
-}
+    for (auto entry : wifiCredentials)
+    {
+        if (!strcmp(entry.ssid, ssid))
+        {
+            return entry.password;
+        }
+    }
 
-bool CredentialManager::AddNetworkToList(const char *ssid)
-{
-    return _AddNetworToList(ssid);
-}
-
-bool CredentialManager::_AddNetworToList(const char *ssid)
-{
-    return false;
-}
-
-bool CredentialManager::ReadNetworksFromMemory(const char *ssid)
-{
-    return _ReadNetworksFromMemory(ssid);
-}
-
-bool CredentialManager::_ReadNetworksFromMemory(const char *ssid)
-{
-    return false;
+    return "";
 }
