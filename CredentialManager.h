@@ -39,6 +39,8 @@ public:
 
     ~CredentialManager();
 
+    bool begin();
+
     /**
      * @brief Some brief explanation
      *

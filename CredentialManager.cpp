@@ -32,6 +32,11 @@ CredentialManager::~CredentialManager()
 {
 }
 
+bool CredentialManager::begin()
+{
+    ReadCredentialsFromMemory();
+}
+
 bool CredentialManager::ClearCredentialMemory()
 {
     bool done = false;
