@@ -32,9 +32,9 @@ CredentialManager::~CredentialManager()
 {
 }
 
-bool CredentialManager::begin()
+int CredentialManager::begin()
 {
-    ReadCredentialsFromMemory();
+    return ReadCredentialsFromMemory();
 }
 
 bool CredentialManager::ClearCredentialMemory()
@@ -59,7 +59,7 @@ bool CredentialManager::AddCredential(const char *ssid, const char *password)
     SSID is saved first then the password, each in a different line \n
 
  */
-bool CredentialManager::ReadCredentialsFromMemory(void)
+int CredentialManager::ReadCredentialsFromMemory(void)
 {
     return _ReadCredentialsFromMemory();
 }
@@ -97,9 +97,9 @@ const char *CredentialManager::GetPassword(const char *ssid)
     return _GetPassword(ssid);
 }
 
-bool CredentialManager::_ReadCredentialsFromMemory(void)
+int CredentialManager::_ReadCredentialsFromMemory(void)
 {
-    bool credentialAdded = false;
+    int credentialsAdded = 0;
     fileRead = true;
     Serial.print("[ReadCredentialsFromMemory]\n");
 
@@ -141,11 +141,12 @@ bool CredentialManager::_ReadCredentialsFromMemory(void)
 
                 if (rslt == 0 || rslt == 1)
                 {
-                    credentialAdded = true;
                     Serial.print("[Success]: Credential SSID: ");
                     Serial.print(_ssid);
                     Serial.print(", Password: ");
                     Serial.print(_password);
+
+                    credentialsAdded += 1;
                 }
                 else
                 {
@@ -161,7 +162,7 @@ bool CredentialManager::_ReadCredentialsFromMemory(void)
     }
     SPIFFS.end();
 
-    return credentialAdded;
+    return credentialsAdded;
 }
 
 bool CredentialManager::_ExistWifiCredential(const char *ssid, const char *password)

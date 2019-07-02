@@ -20,11 +20,6 @@ struct WifiCredential
     char *password;
 };
 
-struct NetworkSSID
-{
-    char *ssid;
-};
-
 typedef std::vector<WifiCredential> WifiCredentials;
 
 class CredentialManager
@@ -39,14 +34,8 @@ public:
 
     ~CredentialManager();
 
-    bool begin();
+    int begin();
 
-    /**
-     * @brief Some brief explanation
-     *
-     * @return bool True if credential added
-     *
-     */
     bool AddCredential(const char *ssid, const char *password);
 
     bool ExistWifiCredential(const char *ssid, const char *password);
@@ -64,9 +53,9 @@ private:
 
     bool _AddCredential(const char *ssid, const char *password);
 
-    bool ReadCredentialsFromMemory(void);
+    int ReadCredentialsFromMemory(void);
 
-    bool _ReadCredentialsFromMemory(void);
+    int _ReadCredentialsFromMemory(void);
 
     int AddCredentialToList(const char *ssid, const char *password);
 
