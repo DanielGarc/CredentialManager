@@ -13,6 +13,7 @@
 #define CredentialManager_H
 
 #include <vector>
+#include "WString.h"
 
 struct WifiCredential
 {
@@ -26,10 +27,6 @@ class CredentialManager
 {
 
 public:
-    /**
-     * @brief Constructor
-     *
-     */
     CredentialManager();
 
     ~CredentialManager();
@@ -40,7 +37,7 @@ public:
 
     bool ExistWifiCredential(const char *ssid, const char *password);
 
-    const char *GetPassword(const char *ssid);
+    bool GetPassword(const char *ssid, const char *&password);
 
     bool ClearCredentialMemory(void);
 
@@ -49,21 +46,11 @@ private:
 
     WifiCredentials wifiCredentials;
 
-    bool _ExistWifiCredential(const char *ssid, const char *password);
-
-    bool _AddCredential(const char *ssid, const char *password);
-
     int ReadCredentialsFromMemory(void);
-
-    int _ReadCredentialsFromMemory(void);
 
     int AddCredentialToList(const char *ssid, const char *password);
 
-    int _AddCredentialToList(const char *ssid, const char *password);
-
     bool WriteCredentialToMemory(const char *ssid, const char *password);
-
-    const char *_GetPassword(const char *ssid);
 };
 
 #endif

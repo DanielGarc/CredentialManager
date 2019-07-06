@@ -4,7 +4,7 @@
 #include "CredentialManager.h"
 #include "FS.h"
 
-CredentialManager wifiMultiSPIFFS;
+CredentialManager cmanager;
 
 String s_SerialMessage;
 uint32_t i_index = 0;
@@ -19,6 +19,11 @@ void setup(void)
     Serial.println("loaded\n");
 
     Serial.println(millis());
+
+    cmanager.begin();
+    const char *test;
+    cmanager.GetPassword("danny's 2.4Ghz", test);
+    Serial.print(test);
 }
 
 void loop()
@@ -27,14 +32,14 @@ void loop()
     if (Serial.available())
     {
         s_SerialMessage = Serial.readString();
-        if (s_SerialMessage == "delete" && wifiMultiSPIFFS.ClearCredentialMemory())
+        if (s_SerialMessage == "delete" && cmanager.ClearCredentialMemory())
         {
             Serial.println("File Removed");
         }
         else if (s_SerialMessage == "read")
         {
             if (SPIFFS.begin())
-                Serial.print("SPIFFS Started");
+                Serial.print("SPIFFS Started\n");
 
             File f = SPIFFS.open("/credentials", "r");
 
@@ -61,18 +66,24 @@ void loop()
             Serial.println(i_index);
             if (i_index % 2 == 0)
             {
-                l_ssid = s_SerialMessage.c_str();
-                Serial.println(l_ssid);
+                l_ssid = strdup(s_SerialMessage.c_str());
             }
             else
             {
-                l_passphrase = s_SerialMessage.c_str();
+                l_passphrase = strdup(s_SerialMessage.c_str());
                 Serial.print("Serial message: ");
                 Serial.print(l_ssid);
                 Serial.print(", ");
                 Serial.println(l_passphrase);
                 Serial.println();
-                wifiMultiSPIFFS.AddCredential(l_ssid, l_passphrase);
+                if (cmanager.AddCredential(l_ssid, l_passphrase))
+                {
+                    Serial.println("Added.");
+                }
+                else
+                {
+                    Serial.println("NOT Added.");
+                }
             }
             i_index++;
         }
