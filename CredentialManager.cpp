@@ -30,6 +30,18 @@ CredentialManager::CredentialManager()
 
 CredentialManager::~CredentialManager()
 {
+    for (WifiCredential entry : wifiCredentials)
+    {
+        if (entry.ssid)
+        {
+            free(entry.ssid);
+        }
+        if (entry.password)
+        {
+            free(entry.password);
+        }
+    }
+    wifiCredentials.clear();
 }
 
 int CredentialManager::begin()
