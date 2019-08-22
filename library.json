@@ -4,7 +4,7 @@
   "keywords": "communication",
   "description": "Store and retrieved WiFi credentials from memory",
   "frameworks": "arduino",
-  "platform": "espressif32",
+  "platform": "espressif8266",
   "repository": {
     "type": "git",
     "url": "https://github.com/DanielGarc/CredentialManager.git"
