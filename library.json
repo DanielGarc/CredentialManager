@@ -1,17 +1,19 @@
 {
   "name": "Credential Manager",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "keywords": "communication",
   "description": "Store and retrieved WiFi credentials from memory",
   "frameworks": "arduino",
-  "platform": "espressif8266",
+  "platforms": "espressif8266, espressif32",
   "repository": {
     "type": "git",
     "url": "https://github.com/DanielGarc/CredentialManager.git"
   },
-  "author": {
-    "name": "Daniel Garcia",
-    "maintainer": true,
-    "url": "https://github.com/DanielGarc"
-  }
+   "authors": [
+        {
+            "name": "Daniel Garcia",
+            "url": "https://github.com/DanielGarc",
+            "maintainer": true
+        }
+    ]
 }
